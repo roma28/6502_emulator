@@ -3,4 +3,4 @@ project(6502emulator C)
 
 set(CMAKE_C_STANDARD 99)
 
-add_executable(6502emulator src/main.c)
+add_executable(6502emulator src/main.c src/6502_debug.c)

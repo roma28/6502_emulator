@@ -3,6 +3,7 @@
 
 #ifndef INC_6502EMULATOR_6502_BASIC_STRUCTURES_H
 #define INC_6502EMULATOR_6502_BASIC_STRUCTURES_H
+#include <stdlib.h>
 typedef struct CPU CPU;
 
 enum flags {
@@ -19,7 +20,7 @@ struct registers {
     u_int8_t A;
     u_int8_t X;
     u_int8_t Y;
-    u_int8_t S;
+    u_int16_t SP;
     u_int16_t PC;
     u_int8_t P;
 };

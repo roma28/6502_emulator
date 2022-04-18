@@ -3,6 +3,7 @@
 //
 // Created by Roman Ishchenko on 17.04.2022.
 //
+
 #include "6502_basic_structures.h"
 #include <stdio.h>
 
@@ -11,10 +12,7 @@
 
 int dump_ram(CPU *cpu, FILE *f);
 
-void load_ram(CPU *cpu, FILE *f, size_t shift, size_t nbytes);
-
 void print_registers(CPU *cpu);
 
-void reset(CPU *cpu);
 
 #endif //INC_6502EMULATOR_6502_DEBUG_H

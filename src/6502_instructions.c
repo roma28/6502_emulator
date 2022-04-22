@@ -13,9 +13,10 @@ void ADC(CPU *cpu, uint8_t addressing_mode) {
     uint16_t operand = get_operand(cpu, addressing_mode);
 
     uint16_t res = cpu->reg.A + operand;
-    if (res & (1 << 8)) cpu->reg.P |= CARRY; // checking if overflow happened
+    if (res & (1 << 8)) cpu->reg.P |= CARRY; // checking for carry
     cpu->reg.A = res & 0xff; // saving only lower byte
 }
+
 
 void AND(CPU *cpu, uint8_t addressing_mode) {
     //Accumulator aND
@@ -37,7 +38,6 @@ void CLC(CPU *cpu) {
 void DEC(CPU *cpu) {
     cpu->reg.A -= 1;
     cpu->reg.PC++;
-
 }
 
 void DEX(CPU *cpu) {
@@ -50,13 +50,17 @@ void DEY(CPU *cpu) {
     cpu->reg.PC++;
 }
 
+void EOR(CPU *cpu, uint8_t addressing_mode) {
+    cpu->reg.A ^= get_operand(cpu, addressing_mode);
+}
+
 void INX(CPU *cpu) {
-    cpu->reg.X -= 1;
+    cpu->reg.X += 1;
     cpu->reg.PC++;
 }
 
 void INY(CPU *cpu) {
-    cpu->reg.Y -= 1;
+    cpu->reg.Y += 1;
     cpu->reg.PC++;
 }
 
@@ -75,11 +79,11 @@ void LDY(CPU *cpu, uint8_t addressing_mode) {
     cpu->reg.Y = get_operand(cpu, addressing_mode);
 }
 
-void ORA(CPU *cpu, uint8_t addressing_mode){
+void ORA(CPU *cpu, uint8_t addressing_mode) {
     //OR Accumulator
     cpu->reg.A &= get_operand(cpu, addressing_mode);
     if (cpu->reg.A == 0) cpu->reg.P |= ZERO;
-    if (cpu->reg.A>>7 == 1) cpu->reg.P |= NEGATIVE;
+    if (cpu->reg.A >> 7 == 1) cpu->reg.P |= NEGATIVE;
 }
 
 void STA(CPU *cpu, uint8_t addressing_mode) {

@@ -1,3 +1,5 @@
+// This is an open source non-commercial project. Dear PVS-Studio, please check it.
+// PVS-Studio Static Code Analyzer for C, C++, C#, and Java: https://pvs-studio.com
 //
 // Created by Roman Ishchenko on 18.04.2022.
 //
@@ -11,7 +13,7 @@ uint16_t get_address(CPU *cpu, uint8_t addressing_mode);
 
 uint8_t get_operand(CPU *cpu, uint8_t addressing_mode);
 
-void decode(CPU *cpu, uint8_t instruction);
+void decode(CPU *cpu, uint8_t opcode);
 
 uint8_t fetch(CPU *cpu);
 

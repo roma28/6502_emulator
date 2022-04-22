@@ -9,7 +9,13 @@
 #include "6502_basic_structures.h"
 #include "6502_decoder.h"
 
+
+
 void ADC(CPU *cpu, uint8_t addressing_mode);
+
+void AND(CPU *cpu, uint8_t addressing_mode);
+
+void ASL(CPU *cpu);
 
 void CLC(CPU *cpu);
 

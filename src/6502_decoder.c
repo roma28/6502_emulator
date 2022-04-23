@@ -68,7 +68,7 @@ uint16_t get_address(CPU *cpu, uint8_t addressing_mode) {
             cpu->reg.PC++;
             addr = *(cpu->RAM + tmp_addr) | (*(cpu->RAM + tmp_addr + 1) << 8); // reading address from memory in LE
             break;
-        case ZERO_PAGE_INDEXED_Y_INDIRECT:
+        case ZERO_PAGE_INDIRECT_INDEXED_Y:
             tmp_addr = (*(cpu->RAM + cpu->reg.PC) | (0x00 << 8)) + cpu->reg.Y; // forming address of the operand address
             cpu->reg.PC++;
             addr = *(cpu->RAM + tmp_addr) | (*(cpu->RAM + tmp_addr + 1) << 8); // reading address from memory in LE
@@ -121,7 +121,7 @@ void decode(CPU *cpu, uint8_t opcode) {
             ADC(cpu, ZERO_PAGE_INDEXED_X);
             break;
         case 0x71:
-            ADC(cpu, ZERO_PAGE_INDEXED_Y_INDIRECT);
+            ADC(cpu, ZERO_PAGE_INDIRECT_INDEXED_Y);
             break;
 
         case 0x18:
@@ -156,7 +156,7 @@ void decode(CPU *cpu, uint8_t opcode) {
             LDA(cpu, ZERO_PAGE_INDEXED_X);
             break;
         case 0xb1:
-            LDA(cpu, ZERO_PAGE_INDEXED_Y_INDIRECT);
+            LDA(cpu, ZERO_PAGE_INDIRECT_INDEXED_Y);
             break;
 
         case 0xae:
@@ -220,7 +220,7 @@ void decode(CPU *cpu, uint8_t opcode) {
             STA(cpu, ZERO_PAGE_INDEXED_X);
             break;
         case 0x91:
-            STA(cpu, ZERO_PAGE_INDEXED_Y_INDIRECT);
+            STA(cpu, ZERO_PAGE_INDIRECT_INDEXED_Y);
             break;
 
         case 0x8e:
@@ -241,6 +241,27 @@ void decode(CPU *cpu, uint8_t opcode) {
             break;
         case 0x94:
             STY(cpu, ZERO_PAGE_INDEXED_X);
+            break;
+
+        case 0xaa:
+            TAX(cpu);
+            break;
+        case 0x8a:
+            TXA(cpu);
+            break;
+
+        case 0xa8:
+            TAY(cpu);
+            break;
+        case 0x98:
+            TYA(cpu);
+            break;
+
+        case 0xba:
+            TSX(cpu);
+            break;
+        case 0x9a:
+            TXS(cpu);
             break;
 
         default:

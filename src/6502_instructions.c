@@ -102,5 +102,39 @@ void STY(CPU *cpu, uint8_t addressing_mode) {
     *(cpu->RAM + get_address(cpu, addressing_mode)) = cpu->reg.Y;
 }
 
+void TAX(CPU *cpu) {
+    //Transfer Accumulator to X
+    cpu->reg.X = cpu->reg.A;
+}
+
+void TXA(CPU *cpu) {
+    //Transfer X to Accumulator
+    cpu->reg.A = cpu->reg.X;
+}
+
+void TAY(CPU *cpu) {
+    //Transfer Accumulator to Y
+    cpu->reg.Y = cpu->reg.A;
+}
+
+void TYA(CPU *cpu) {
+    //Transfer Y to Accumulator
+    cpu->reg.A = cpu->reg.Y;
+}
+
+void TSX(CPU *cpu) {
+    //Transfer Stack pointer to X
+    cpu->reg.X = cpu->reg.SP & 0xff;
+}
+
+void TXS(CPU *cpu) {
+    //Transfer X to Stack pointer
+    cpu->reg.SP = cpu->reg.X;
+}
+
+
+
+
+
 
 

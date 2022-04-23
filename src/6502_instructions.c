@@ -10,11 +10,12 @@
 
 void ADC(CPU *cpu, uint8_t addressing_mode) {
     //ADd memory to accumulator with Carry
-    uint16_t operand = get_operand(cpu, addressing_mode);
+    uint8_t operand = get_operand(cpu, addressing_mode);
 
-    uint16_t res = cpu->reg.A + operand;
-    if (res & (1 << 8)) cpu->reg.P |= CARRY; // checking for carry
-    cpu->reg.A = res & 0xff; // saving only lower byte
+    uint8_t res = cpu->reg.A + operand;
+    res += cpu->reg.P & 1; // checking for carry flag
+
+    cpu->reg.A = res;
 }
 
 

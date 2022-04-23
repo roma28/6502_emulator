@@ -8,12 +8,20 @@
 #include <stdio.h>
 #include "../include/6502_decoder.h"
 
+/**
+ * Gives the address in the RAM of the instruction operand
+ * @param cpu pointer to a CPU instance
+ * @param addressing_mode addressing mode, specifies how the address of the operand is stored
+ * @return Operand address in RAM
+ */
+//TODO Relative addressing
 uint16_t get_address(CPU *cpu, uint8_t addressing_mode) {
-    // returns the address of the operand
+
     uint16_t addr;
+    uint16_t tmp_addr; // for indirect addressing
 
     switch (addressing_mode) {
-        case ABSOLUTE_INDIRECT: // address is stored in two following bytes in LE
+        case ABSOLUTE: // address is stored in two following bytes in LE
             addr = *(cpu->RAM + cpu->reg.PC) | (*(cpu->RAM + cpu->reg.PC + 1) << 8);
             cpu->reg.PC += 2;
             break;
@@ -28,28 +36,94 @@ uint16_t get_address(CPU *cpu, uint8_t addressing_mode) {
             cpu->reg.PC += 2;
             break;
         case IMMEDIATE: // operand is the next byte
-            addr = cpu->reg.PC++;
+            addr = cpu->reg.PC;
+            cpu->reg.PC++;
             break;
         case ZERO_PAGE: //the following byte is lower byte of the address, the upper byte is always 0x00
             addr = cpu->reg.PC | (0x00 << 8);
             cpu->reg.PC++;
+            break;
+        case PROGRAM_COUNTER_RELATIVE:
+            addr = cpu->reg.PC + (int8_t) (*(cpu->RAM + cpu->reg.PC));
+            cpu->reg.PC++;
+            break;
+        case ABSOLUTE_INDIRECT:
+            tmp_addr = *(cpu->RAM + cpu->reg.PC) |
+                       (*(cpu->RAM + cpu->reg.PC + 1) << 8); // forming address of the operand address
+            cpu->reg.PC += 2;
+            addr = *(cpu->RAM + tmp_addr) | (*(cpu->RAM + tmp_addr + 1) << 8); // reading address from memory in LE
+            break;
+        case ZERO_PAGE_INDEXED_X: //the following byte is lower byte of the address, the upper byte is always 0x00 + shift in X
+            addr = cpu->reg.PC | (0x00 << 8);
+            addr += cpu->reg.X;
+            cpu->reg.PC++;
+            break;
+        case ZERO_PAGE_INDEXED_Y: //the following byte is lower byte of the address, the upper byte is always 0x00 + shift in Y
+            addr = cpu->reg.PC | (0x00 << 8);
+            addr += cpu->reg.Y;
+            cpu->reg.PC++;
+            break;
+        case ZERO_PAGE_INDEXED_X_INDIRECT:
+            tmp_addr = (*(cpu->RAM + cpu->reg.PC) | (0x00 << 8)) + cpu->reg.X; // forming address of the operand address
+            cpu->reg.PC++;
+            addr = *(cpu->RAM + tmp_addr) | (*(cpu->RAM + tmp_addr + 1) << 8); // reading address from memory in LE
+            break;
+        case ZERO_PAGE_INDEXED_Y_INDIRECT:
+            tmp_addr = (*(cpu->RAM + cpu->reg.PC) | (0x00 << 8)) + cpu->reg.Y; // forming address of the operand address
+            cpu->reg.PC++;
+            addr = *(cpu->RAM + tmp_addr) | (*(cpu->RAM + tmp_addr + 1) << 8); // reading address from memory in LE
+            break;
+
+        default:
+            printf("Addressing mode is unknown");
+            addr = 0;
     }
 
     return addr;
 }
 
+/**
+ * Loads the operand from the RAM
+ * @param cpu pointer to a CPU instance
+ * @param addressing_mode addressing mode, specifies how the address of the operand is stored
+ * @return Operand value
+ */
 uint8_t get_operand(CPU *cpu, uint8_t addressing_mode) {
     return *(cpu->RAM + get_address(cpu, addressing_mode));
 }
 
+/**
+ * Decodes the instruction from its opcode and runs it
+ * @param cpu Pointer to a CPU instance
+ * @param opcode Opcode of the instruction (specifies instruction and addressing mode)
+ */
 void decode(CPU *cpu, uint8_t opcode) {
     switch (opcode) {
+        case 0x6d:
+            ADC(cpu, ABSOLUTE);
+            break;
+        case 0x7d:
+            ADC(cpu, ABSOLUTE_INDEXED_X);
+            break;
+        case 0x79:
+            ADC(cpu, ABSOLUTE_INDEXED_Y);
+            break;
         case 0x69:
             ADC(cpu, IMMEDIATE);
             break;
-        case 0x6d:
-            ADC(cpu, ABSOLUTE_INDIRECT);
+        case 0x65:
+            ADC(cpu, ZERO_PAGE);
             break;
+        case 0x61:
+            ADC(cpu, ZERO_PAGE_INDEXED_X_INDIRECT);
+            break;
+        case 0x75:
+            ADC(cpu, ZERO_PAGE_INDEXED_X);
+            break;
+        case 0x71:
+            ADC(cpu, ZERO_PAGE_INDEXED_Y_INDIRECT);
+            break;
+
         case 0x18:
             CLC(cpu);
             break;
@@ -170,15 +244,18 @@ void decode(CPU *cpu, uint8_t opcode) {
             break;
 
         default:
-            printf("Not implemented opcode %02X", opcode);
+            printf("Not implemented opcode %02X at %04X\n", opcode, cpu->reg.PC - 1);
             break;
     }
 }
 
+/**
+ * Fetches the next instuction from RAM
+ * @param cpu pointer to a CPU instance
+ * @return instruction opcode
+ */
 uint8_t fetch(CPU *cpu) {
     cpu->reg.PC++;
     return *(cpu->RAM + cpu->reg.PC - 1);
-
-
 }
 

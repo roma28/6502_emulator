@@ -11,10 +11,11 @@ void print_registers(CPU *cpu) {
            cpu->reg.PC);
     printf("Flags: ");
     for (int i = sizeof(uint8_t) * 8; i != -1; i--) printf("%d", (cpu->reg.P & (1 << i)) >> i);
+    printf("\n");
 }
 
 int dump_ram(CPU *cpu, FILE *f) {
-    size_t written = fwrite(cpu->RAM, sizeof(uint8_t), 0xffff, f);
+    size_t written = fwrite(cpu->RAM, sizeof(uint8_t), RAM_SIZE, f);
     fclose(f);
     if (written == 0xffff) return 0;
     return 1;

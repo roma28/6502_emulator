@@ -21,6 +21,8 @@ void INX(CPU *cpu);
 
 void INY(CPU *cpu);
 
+void JMP(CPU *cpu, uint8_t addressing_mode);
+
 void LDA(CPU *cpu, uint8_t addressing_mode);
 
 void LDX(CPU *cpu, uint8_t addressing_mode);

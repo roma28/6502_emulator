@@ -134,6 +134,14 @@ void decode(CPU *cpu, uint8_t opcode) {
             INY(cpu);
             break;
 
+        case 0x4c:
+            JMP(cpu, ABSOLUTE);
+            break;
+        case 0x6c:
+            JMP(cpu, ABSOLUTE_INDIRECT);
+            break;
+
+
         case 0xad:
             LDA(cpu, ABSOLUTE);
             break;

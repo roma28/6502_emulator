@@ -31,10 +31,10 @@ int main() {
     }
 
     reset(&cpu);
-    ssize_t instructions_to_run = 4;
+    ssize_t instructions_to_run = INT32_MAX;
     for (ssize_t i = 0; i < instructions_to_run; ++i) {
         decode(&cpu, fetch(&cpu));
-        print_registers(&cpu);
+//        print_registers(&cpu);
     }
 
     FILE *ramfile = fopen("../asm/ram.bin", "w");

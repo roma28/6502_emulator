@@ -65,6 +65,10 @@ void INY(CPU *cpu) {
     cpu->reg.PC++;
 }
 
+void JMP(CPU *cpu, uint8_t addressing_mode) {
+    cpu->reg.PC = get_address(cpu, addressing_mode);
+}
+
 void LDA(CPU *cpu, uint8_t addressing_mode) {
     //LoaD A
     cpu->reg.A = get_operand(cpu, addressing_mode);

@@ -91,4 +91,15 @@ void STA(CPU *cpu, uint8_t addressing_mode) {
     *(cpu->RAM + get_address(cpu, addressing_mode)) = cpu->reg.A;
 }
 
+void STX(CPU *cpu, uint8_t addressing_mode) {
+    //Store X
+    *(cpu->RAM + get_address(cpu, addressing_mode)) = cpu->reg.X;
+}
+
+void STY(CPU *cpu, uint8_t addressing_mode) {
+    //Store Y
+    *(cpu->RAM + get_address(cpu, addressing_mode)) = cpu->reg.Y;
+}
+
+
 

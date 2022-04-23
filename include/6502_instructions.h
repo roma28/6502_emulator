@@ -33,4 +33,9 @@ void ORA(CPU *cpu, uint8_t addressing_mode);
 
 void STA(CPU *cpu, uint8_t addressing_mode);
 
+void STX(CPU *cpu, uint8_t addressing_mode);
+
+void STY(CPU *cpu, uint8_t addressing_mode);
+
+
 #endif //INC_6502EMULATOR_6502_INSTRUCTIONS_H

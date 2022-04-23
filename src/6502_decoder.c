@@ -61,7 +61,7 @@ void decode(CPU *cpu, uint8_t opcode) {
             break;
 
         case 0xad:
-            LDA(cpu, ABSOLUTE_INDIRECT);
+            LDA(cpu, ABSOLUTE);
             break;
         case 0xbd:
             LDA(cpu, ABSOLUTE_INDEXED_X);
@@ -86,7 +86,7 @@ void decode(CPU *cpu, uint8_t opcode) {
             break;
 
         case 0xae:
-            LDX(cpu, ABSOLUTE_INDIRECT);
+            LDX(cpu, ABSOLUTE);
             break;
         case 0xbe:
             LDX(cpu, ABSOLUTE_INDEXED_Y);
@@ -102,7 +102,7 @@ void decode(CPU *cpu, uint8_t opcode) {
             break;
 
         case 0xac:
-            LDY(cpu, ABSOLUTE_INDIRECT);
+            LDY(cpu, ABSOLUTE);
             break;
         case 0xbc:
             LDY(cpu, ABSOLUTE_INDEXED_X);
@@ -128,8 +128,47 @@ void decode(CPU *cpu, uint8_t opcode) {
             break;
 
         case 0x8d:
-            STA(cpu, ABSOLUTE_INDIRECT);
+            STA(cpu, ABSOLUTE);
             break;
+        case 0x9d:
+            STA(cpu, ABSOLUTE_INDEXED_X);
+            break;
+        case 0x99:
+            STA(cpu, ABSOLUTE_INDEXED_Y);
+            break;
+        case 0x85:
+            STA(cpu, ZERO_PAGE);
+            break;
+        case 0x81:
+            STA(cpu, ZERO_PAGE_INDEXED_X_INDIRECT);
+            break;
+        case 0x95:
+            STA(cpu, ZERO_PAGE_INDEXED_X);
+            break;
+        case 0x91:
+            STA(cpu, ZERO_PAGE_INDEXED_Y_INDIRECT);
+            break;
+
+        case 0x8e:
+            STX(cpu, ABSOLUTE);
+            break;
+        case 0x86:
+            STX(cpu, ZERO_PAGE);
+            break;
+        case 0x96:
+            STX(cpu, ZERO_PAGE_INDEXED_Y);
+            break;
+
+        case 0x8c:
+            STY(cpu, ABSOLUTE);
+            break;
+        case 0x84:
+            STY(cpu, ZERO_PAGE);
+            break;
+        case 0x94:
+            STY(cpu, ZERO_PAGE_INDEXED_X);
+            break;
+
         default:
             printf("Not implemented opcode %02X", opcode);
             break;

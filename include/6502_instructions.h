@@ -29,6 +29,14 @@ void LDY(CPU *cpu, uint8_t addressing_mode);
 
 void ORA(CPU *cpu, uint8_t addressing_mode);
 
+void PHA(CPU *cpu);
+
+void PLA(CPU *cpu);
+
+void PHP(CPU *cpu);
+
+void PLP(CPU *cpu);
+
 void STA(CPU *cpu, uint8_t addressing_mode);
 
 void STX(CPU *cpu, uint8_t addressing_mode);

@@ -201,6 +201,20 @@ void decode(CPU *cpu, uint8_t opcode) {
             ORA(cpu, ABSOLUTE_INDIRECT);
             break;
 
+        case 0x48:
+            PHA(cpu);
+            break;
+        case 0x68:
+            PLA(cpu);
+            break;
+
+        case 0x08:
+            PHP(cpu);
+            break;
+        case 0x28:
+            PLP(cpu);
+            break;
+
         case 0x8d:
             STA(cpu, ABSOLUTE);
             break;

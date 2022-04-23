@@ -83,9 +83,28 @@ void LDY(CPU *cpu, uint8_t addressing_mode) {
 void ORA(CPU *cpu, uint8_t addressing_mode) {
     //OR Accumulator
     cpu->reg.A &= get_operand(cpu, addressing_mode);
-    if (cpu->reg.A == 0) cpu->reg.P |= ZERO;
-    if (cpu->reg.A >> 7 == 1) cpu->reg.P |= NEGATIVE;
 }
+
+void PHA(CPU *cpu) {
+    //PusH Accumulator
+    *(cpu->RAM + cpu->reg.SP--) = cpu->reg.A;
+}
+
+void PLA(CPU *cpu) {
+    //PuLl Accumulator
+    cpu->reg.A = *(cpu->RAM + cpu->reg.SP++);
+}
+
+void PHP(CPU *cpu) {
+    //PusH Processor status
+    *(cpu->RAM + cpu->reg.SP--) = cpu->reg.P;
+}
+
+void PLP(CPU *cpu) {
+    //PuLl Processor status
+    cpu->reg.P = *(cpu->RAM + cpu->reg.SP++);
+}
+
 
 void STA(CPU *cpu, uint8_t addressing_mode) {
     //Store A
@@ -124,7 +143,7 @@ void TYA(CPU *cpu) {
 
 void TSX(CPU *cpu) {
     //Transfer Stack pointer to X
-    cpu->reg.X = cpu->reg.SP & 0xff;
+    cpu->reg.X = cpu->reg.SP;
 }
 
 void TXS(CPU *cpu) {

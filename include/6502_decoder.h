@@ -15,6 +15,11 @@ uint8_t get_operand(CPU *cpu, uint8_t addressing_mode);
 
 void decode(CPU *cpu, uint8_t opcode);
 
+/**
+ * Fetches the next instuction from RAM
+ * @param cpu pointer to a CPU instance
+ * @return instruction opcode
+ */
 uint8_t fetch(CPU *cpu);
 
 #endif //INC_6502EMULATOR_6502_DECODER_H

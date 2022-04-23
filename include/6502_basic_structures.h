@@ -43,7 +43,7 @@ struct registers {
     u_int8_t A;
     u_int8_t X;
     u_int8_t Y;
-    u_int16_t SP;
+    u_int8_t SP;
     u_int16_t PC;
     u_int8_t P;
 };

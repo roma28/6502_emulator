@@ -9,7 +9,7 @@
 #define INC_6502EMULATOR_6502_BASIC_STRUCTURES_H
 typedef struct CPU CPU;
 
-typedef enum {
+enum {
     CARRY = (1 << 0),
     ZERO = (1 << 1),
     IRQ = (1 << 2),
@@ -17,9 +17,9 @@ typedef enum {
     BRK = (1 << 4),
     OVERFLOW = (1 << 6),
     NEGATIVE = (1 << 7)
-} flags;
+};
 
-typedef enum {
+enum {
     ABSOLUTE,
     ABSOLUTE_INDEXED_INDIERCT,
     ABSOLUTE_INDEXED_X,
@@ -35,7 +35,7 @@ typedef enum {
     ZERO_PAGE_INDEXED_Y,
     ZERO_PAGE_INDEXED_X_INDIRECT,
     ZERO_PAGE_INDEXED_Y_INDIRECT,
-} addressing;
+};
 
 
 struct registers {

@@ -19,7 +19,6 @@ void nop(CPU *cpu) {
 }
 
 
-
 int main() {
     CPU cpu;
     cpu.RAM = malloc(65536 * sizeof(uint8_t));

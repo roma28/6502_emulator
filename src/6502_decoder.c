@@ -14,24 +14,23 @@ uint16_t get_address(CPU *cpu, uint8_t addressing_mode) {
 
     switch (addressing_mode) {
         case ABSOLUTE_INDIRECT: // address is stored in two following bytes in LE
-            addr = *(cpu->RAM + cpu->reg.PC) | *(cpu->RAM + cpu->reg.PC + 1) << 8; // forming from two bytes
+            addr = *(cpu->RAM + cpu->reg.PC) | (*(cpu->RAM + cpu->reg.PC + 1) << 8);
             cpu->reg.PC += 2;
             break;
         case ABSOLUTE_INDEXED_X: // address is stored in two following bytes in LE + shift in X
-            addr = *(cpu->RAM + cpu->reg.PC) | *(cpu->RAM + cpu->reg.PC + 1) << 8;
+            addr = *(cpu->RAM + cpu->reg.PC) | (*(cpu->RAM + cpu->reg.PC + 1) << 8);
             addr += cpu->reg.X;
             cpu->reg.PC += 2;
             break;
         case ABSOLUTE_INDEXED_Y: // address is stored in two following bytes in LE + shift in Y
-            addr = *(cpu->RAM + cpu->reg.PC) | *(cpu->RAM + cpu->reg.PC + 1) << 8;
+            addr = *(cpu->RAM + cpu->reg.PC) | (*(cpu->RAM + cpu->reg.PC + 1) << 8);
             addr += cpu->reg.Y;
             cpu->reg.PC += 2;
             break;
         case IMMEDIATE: // operand is the next byte
-            addr = cpu->reg.PC;
-            cpu->reg.PC++;
+            addr = cpu->reg.PC++;
             break;
-        case ZERO_PAGE:
+        case ZERO_PAGE: //the following byte is lower byte of the address, the upper byte is always 0x00
             addr = cpu->reg.PC | (0x00 << 8);
             cpu->reg.PC++;
     }
@@ -60,6 +59,7 @@ void decode(CPU *cpu, uint8_t opcode) {
         case 0xc8:
             INY(cpu);
             break;
+
         case 0xad:
             LDA(cpu, ABSOLUTE_INDIRECT);
             break;
@@ -84,26 +84,49 @@ void decode(CPU *cpu, uint8_t opcode) {
         case 0xb1:
             LDA(cpu, ZERO_PAGE_INDEXED_Y_INDIRECT);
             break;
-        case 0xa2:
-            LDX(cpu, IMMEDIATE);
-            break;
+
         case 0xae:
             LDX(cpu, ABSOLUTE_INDIRECT);
             break;
+        case 0xbe:
+            LDX(cpu, ABSOLUTE_INDEXED_Y);
+            break;
+        case 0xa2:
+            LDX(cpu, IMMEDIATE);
+            break;
+        case 0xa6:
+            LDX(cpu, ZERO_PAGE);
+            break;
+        case 0xb6:
+            LDX(cpu, ZERO_PAGE_INDEXED_Y);
+            break;
+
         case 0xac:
             LDY(cpu, ABSOLUTE_INDIRECT);
+            break;
+        case 0xbc:
+            LDY(cpu, ABSOLUTE_INDEXED_X);
             break;
         case 0xa0:
             LDY(cpu, IMMEDIATE);
             break;
-        case 0xea:
+        case 0xa4:
+            LDY(cpu, ZERO_PAGE);
             break;
+        case 0xb4:
+            LDY(cpu, ZERO_PAGE_INDEXED_X);
+            break;
+
+        case 0xea: //nop
+            break;
+
         case 0x09:
             ORA(cpu, IMMEDIATE);
             break;
         case 0x0d:
             ORA(cpu, ABSOLUTE_INDIRECT);
             break;
+
         case 0x8d:
             STA(cpu, ABSOLUTE_INDIRECT);
             break;

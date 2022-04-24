@@ -9,6 +9,26 @@
 #include "../include/6502_decoder.h"
 
 /**
+ * Fetches the next instuction from RAM
+ * @param cpu pointer to a CPU instance
+ * @return instruction opcode
+ */
+uint8_t fetch(CPU *cpu) {
+    cpu->reg.PC++;
+    return *(cpu->RAM + cpu->reg.PC - 1);
+}
+
+/**
+ * Loads the operand from the RAM
+ * @param cpu pointer to a CPU instance
+ * @param addressing_mode addressing mode, specifies how the address of the operand is stored
+ * @return Operand value
+ */
+uint8_t get_operand(CPU *cpu, uint8_t addressing_mode) {
+    return *(cpu->RAM + get_address(cpu, addressing_mode));
+}
+
+/**
  * Gives the address in the RAM of the instruction operand
  * @param cpu pointer to a CPU instance
  * @param addressing_mode addressing mode, specifies how the address of the operand is stored
@@ -42,7 +62,7 @@ uint16_t get_address(CPU *cpu, uint8_t addressing_mode) {
             addr = cpu->reg.PC | (0x00 << 8);
             cpu->reg.PC++;
             break;
-        case PROGRAM_COUNTER_RELATIVE:
+        case RELATIVE:
             addr = cpu->reg.PC + (int8_t) (*(cpu->RAM + cpu->reg.PC));
             cpu->reg.PC++;
             break;
@@ -63,12 +83,12 @@ uint16_t get_address(CPU *cpu, uint8_t addressing_mode) {
             cpu->reg.PC++;
             break;
         case ZERO_PAGE_INDEXED_X_INDIRECT:
-            tmp_addr = (*(cpu->RAM + cpu->reg.PC) | (0x00 << 8)) + cpu->reg.X; // forming address of the operand address
+            tmp_addr = (*(cpu->RAM + cpu->reg.PC) | (0x00 << 8)) + cpu->reg.X; // forming address of the address
             cpu->reg.PC++;
             addr = *(cpu->RAM + tmp_addr) | (*(cpu->RAM + tmp_addr + 1) << 8); // reading address from memory in LE
             break;
         case ZERO_PAGE_INDIRECT_INDEXED_Y:
-            tmp_addr = (*(cpu->RAM + cpu->reg.PC) | (0x00 << 8)); // forming address of the operand address
+            tmp_addr = (*(cpu->RAM + cpu->reg.PC) | (0x00 << 8)); // forming address of the address
             cpu->reg.PC++;
             addr = (*(cpu->RAM + tmp_addr) | (*(cpu->RAM + tmp_addr + 1) << 8)) +
                    cpu->reg.Y; // reading address from memory in LE
@@ -80,16 +100,6 @@ uint16_t get_address(CPU *cpu, uint8_t addressing_mode) {
     }
 
     return addr;
-}
-
-/**
- * Loads the operand from the RAM
- * @param cpu pointer to a CPU instance
- * @param addressing_mode addressing mode, specifies how the address of the operand is stored
- * @return Operand value
- */
-uint8_t get_operand(CPU *cpu, uint8_t addressing_mode) {
-    return *(cpu->RAM + get_address(cpu, addressing_mode));
 }
 
 /**
@@ -124,30 +134,62 @@ void decode(CPU *cpu, uint8_t opcode) {
             ADC(cpu, ZERO_PAGE_INDIRECT_INDEXED_Y);
             break;
 
+            // Branching
+        case 0x90:
+            BCC(cpu);
+            break;
+        case 0xb0:
+            BCS(cpu);
+            break;
+        case 0xd0:
+            BNE(cpu);
+            break;
+        case 0xf0:
+            BEQ(cpu);
+            break;
+        case 0x10:
+            BPL(cpu);
+            break;
+        case 0x30:
+            BMI(cpu);
+            break;
+        case 0x50:
+            BVC(cpu);
+            break;
+        case 0x70:
+            BVS(cpu);
+            break;
+
+            // Clearing/setting flags
         case 0x18:
             CLC(cpu);
             break;
         case 0x38:
             SEC(cpu);
             break;
-
         case 0xd8:
             CLD(cpu);
             break;
         case 0xf8:
             SED(cpu);
             break;
-
         case 0x58:
             CLI(cpu);
             break;
         case 0x78:
             SEI(cpu);
             break;
-
         case 0xb8:
             CLV(cpu);
             break;
+
+        case 0xca:
+            DEX(cpu);
+            break;
+        case 0x88:
+            DEX(cpu);
+            break;
+
 
         case 0xe8:
             INX(cpu);
@@ -156,6 +198,7 @@ void decode(CPU *cpu, uint8_t opcode) {
             INY(cpu);
             break;
 
+            // Jumping
         case 0x4c:
             JMP(cpu, ABSOLUTE);
             break;
@@ -163,6 +206,7 @@ void decode(CPU *cpu, uint8_t opcode) {
             JMP(cpu, ABSOLUTE_INDIRECT);
             break;
 
+            // Loading registers
         case 0xad:
             LDA(cpu, ABSOLUTE);
             break;
@@ -313,13 +357,4 @@ void decode(CPU *cpu, uint8_t opcode) {
     }
 }
 
-/**
- * Fetches the next instuction from RAM
- * @param cpu pointer to a CPU instance
- * @return instruction opcode
- */
-uint8_t fetch(CPU *cpu) {
-    cpu->reg.PC++;
-    return *(cpu->RAM + cpu->reg.PC - 1);
-}
 

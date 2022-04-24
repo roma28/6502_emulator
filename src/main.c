@@ -14,7 +14,6 @@
 #include "../include/6502_decoder.h"
 
 
-
 void nop(CPU *cpu) {
 }
 
@@ -31,17 +30,29 @@ int main() {
     }
 
     reset(&cpu);
-    ssize_t instructions_to_run = INT32_MAX;
-    for (ssize_t i = 0; i < instructions_to_run; ++i) {
-        decode(&cpu, fetch(&cpu));
-//        print_registers(&cpu);
-    }
+//    ssize_t instructions_to_run = INT32_MAX;
+//    ssize_t instructions_to_run = 25;
+//    for (ssize_t i = 0; i < instructions_to_run; ++i) {
+//        decode(&cpu, fetch(&cpu));
+////        print_registers(&cpu);
+//    }
+
+    uint8_t opcode;
+    int i = 0;
+    do {
+        opcode = fetch(&cpu);
+        decode(&cpu, opcode);
+        print_registers(&cpu);
+        i++;
+    } while (opcode != 0);
 
     FILE *ramfile = fopen("../asm/ram.bin", "w");
     if (ramfile) {
         dump_ram(&cpu, ramfile);
         fclose(ramfile);
     }
+    printf("%d instructions executed", i);
+
     return 0;
 }
 

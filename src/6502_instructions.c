@@ -28,6 +28,55 @@ void ASL(CPU *cpu) {
     cpu->reg.A <<= 1;
 }
 
+void BCC(CPU *cpu) {
+    //Branch on Carry Clear
+    uint16_t branch_address = get_address(cpu, RELATIVE);
+    if (!(cpu->reg.P & CARRY)) cpu->reg.PC = branch_address;
+}
+
+void BCS(CPU *cpu) {
+    //Branch on Carry Set
+    uint16_t branch_address = get_address(cpu, RELATIVE);
+    if (cpu->reg.P & CARRY) cpu->reg.PC = branch_address;
+}
+
+void BNZ(CPU *cpu) {
+    //Branch on Non-Zero
+    uint16_t branch_address = get_address(cpu, RELATIVE);
+    if (!(cpu->reg.P & ZERO)) cpu->reg.PC = branch_address;
+}
+
+void BEQ(CPU *cpu) {
+    //Branch on EQual to zero
+    uint16_t branch_address = get_address(cpu, RELATIVE);
+    if (cpu->reg.P & ZERO) cpu->reg.PC = branch_address;
+}
+
+void BPL(CPU *cpu) {
+    //Branch on PLus
+    uint16_t branch_address = get_address(cpu, RELATIVE);
+    if (!(cpu->reg.P & NEGATIVE)) cpu->reg.PC = branch_address;
+}
+
+void BMI(CPU *cpu) {
+    //Branch on MInus
+    uint16_t branch_address = get_address(cpu, RELATIVE);
+    if (cpu->reg.P & NEGATIVE) cpu->reg.PC = branch_address;
+}
+
+void BVC(CPU *cpu) {
+    //Branch on oVerflow Clear
+    uint16_t branch_address = get_address(cpu, RELATIVE);
+    if (!(cpu->reg.P & OVERFLOW)) cpu->reg.PC = branch_address;
+}
+
+void BVS(CPU *cpu) {
+    //Branch on oVerflow Clear
+    uint16_t branch_address = get_address(cpu, RELATIVE);
+    if (cpu->reg.P & OVERFLOW) cpu->reg.PC = branch_address;
+}
+
+
 void CLC(CPU *cpu) {
     // CLear Carry
     cpu->reg.P &= ~CARRY;
@@ -48,7 +97,6 @@ void CLV(CPU *cpu) {
     cpu->reg.P &= ~OVERFLOW;
 }
 
-
 void DEC(CPU *cpu) {
     cpu->reg.A -= 1;
 }
@@ -67,12 +115,10 @@ void EOR(CPU *cpu, uint8_t addressing_mode) {
 
 void INX(CPU *cpu) {
     cpu->reg.X += 1;
-    cpu->reg.PC++;
 }
 
 void INY(CPU *cpu) {
     cpu->reg.Y += 1;
-    cpu->reg.PC++;
 }
 
 void JMP(CPU *cpu, uint8_t addressing_mode) {
@@ -82,16 +128,24 @@ void JMP(CPU *cpu, uint8_t addressing_mode) {
 void LDA(CPU *cpu, uint8_t addressing_mode) {
     //LoaD A
     cpu->reg.A = get_operand(cpu, addressing_mode);
+    if (cpu->reg.A == 0) cpu->reg.P |= ZERO;
+    if (cpu->reg.A & 0b10000000) cpu->reg.P |= NEGATIVE;
 }
 
 void LDX(CPU *cpu, uint8_t addressing_mode) {
     //LoaD X
     cpu->reg.X = get_operand(cpu, addressing_mode);
+    if (cpu->reg.X == 0) cpu->reg.P |= ZERO;
+    if (cpu->reg.X & 0b10000000) cpu->reg.P |= NEGATIVE;
+
 }
 
 void LDY(CPU *cpu, uint8_t addressing_mode) {
     //LoaD Y
     cpu->reg.Y = get_operand(cpu, addressing_mode);
+    if (cpu->reg.Y == 0) cpu->reg.P |= ZERO;
+    if (cpu->reg.Y & 0b10000000) cpu->reg.P |= NEGATIVE;
+
 }
 
 void ORA(CPU *cpu, uint8_t addressing_mode) {
@@ -133,7 +187,6 @@ void SEI(CPU *cpu) {
     //SEt Interrupt
     cpu->reg.P |= IRQ;
 }
-
 
 void STA(CPU *cpu, uint8_t addressing_mode) {
     //Store A

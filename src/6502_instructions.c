@@ -18,7 +18,6 @@ void ADC(CPU *cpu, uint8_t addressing_mode) {
     cpu->reg.A = res;
 }
 
-
 void AND(CPU *cpu, uint8_t addressing_mode) {
     //Accumulator aND
     cpu->reg.A &= get_operand(cpu, addressing_mode);
@@ -27,28 +26,39 @@ void AND(CPU *cpu, uint8_t addressing_mode) {
 void ASL(CPU *cpu) {
     //Accumulator Shift Left
     cpu->reg.A <<= 1;
-    cpu->reg.PC++;
 }
 
 void CLC(CPU *cpu) {
-    // CLear Carrry
+    // CLear Carry
     cpu->reg.P &= ~CARRY;
-    cpu->reg.PC++;
 }
+
+void CLD(CPU *cpu) {
+    // CLear Decimal
+    cpu->reg.P &= ~DECIMAL;
+}
+
+void CLI(CPU *cpu) {
+    // CLear Interrupt
+    cpu->reg.P &= ~IRQ;
+}
+
+void CLV(CPU *cpu) {
+    // CLear oVerflow
+    cpu->reg.P &= ~OVERFLOW;
+}
+
 
 void DEC(CPU *cpu) {
     cpu->reg.A -= 1;
-    cpu->reg.PC++;
 }
 
 void DEX(CPU *cpu) {
     cpu->reg.X -= 1;
-    cpu->reg.PC++;
 }
 
 void DEY(CPU *cpu) {
     cpu->reg.Y -= 1;
-    cpu->reg.PC++;
 }
 
 void EOR(CPU *cpu, uint8_t addressing_mode) {
@@ -107,6 +117,21 @@ void PHP(CPU *cpu) {
 void PLP(CPU *cpu) {
     //PuLl Processor status
     cpu->reg.P = *(cpu->RAM + cpu->reg.SP++);
+}
+
+void SEC(CPU *cpu) {
+    //SEt Carry
+    cpu->reg.P |= CARRY;
+}
+
+void SED(CPU *cpu) {
+    //SEt Decimal
+    cpu->reg.P |= DECIMAL;
+}
+
+void SEI(CPU *cpu) {
+    //SEt Interrupt
+    cpu->reg.P |= IRQ;
 }
 
 

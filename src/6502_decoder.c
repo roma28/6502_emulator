@@ -14,7 +14,6 @@
  * @param addressing_mode addressing mode, specifies how the address of the operand is stored
  * @return Operand address in RAM
  */
-//TODO Relative addressing
 uint16_t get_address(CPU *cpu, uint8_t addressing_mode) {
 
     uint16_t addr;
@@ -69,9 +68,10 @@ uint16_t get_address(CPU *cpu, uint8_t addressing_mode) {
             addr = *(cpu->RAM + tmp_addr) | (*(cpu->RAM + tmp_addr + 1) << 8); // reading address from memory in LE
             break;
         case ZERO_PAGE_INDIRECT_INDEXED_Y:
-            tmp_addr = (*(cpu->RAM + cpu->reg.PC) | (0x00 << 8)) + cpu->reg.Y; // forming address of the operand address
+            tmp_addr = (*(cpu->RAM + cpu->reg.PC) | (0x00 << 8)); // forming address of the operand address
             cpu->reg.PC++;
-            addr = *(cpu->RAM + tmp_addr) | (*(cpu->RAM + tmp_addr + 1) << 8); // reading address from memory in LE
+            addr = (*(cpu->RAM + tmp_addr) | (*(cpu->RAM + tmp_addr + 1) << 8)) +
+                   cpu->reg.Y; // reading address from memory in LE
             break;
 
         default:
@@ -127,6 +127,28 @@ void decode(CPU *cpu, uint8_t opcode) {
         case 0x18:
             CLC(cpu);
             break;
+        case 0x38:
+            SEC(cpu);
+            break;
+
+        case 0xd8:
+            CLD(cpu);
+            break;
+        case 0xf8:
+            SED(cpu);
+            break;
+
+        case 0x58:
+            CLI(cpu);
+            break;
+        case 0x78:
+            SEI(cpu);
+            break;
+
+        case 0xb8:
+            CLV(cpu);
+            break;
+
         case 0xe8:
             INX(cpu);
             break;
@@ -140,7 +162,6 @@ void decode(CPU *cpu, uint8_t opcode) {
         case 0x6c:
             JMP(cpu, ABSOLUTE_INDIRECT);
             break;
-
 
         case 0xad:
             LDA(cpu, ABSOLUTE);

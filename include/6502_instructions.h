@@ -17,6 +17,12 @@ void ASL(CPU *cpu);
 
 void CLC(CPU *cpu);
 
+void CLD(CPU *cpu);
+
+void CLI(CPU *cpu);
+
+void CLV(CPU *cpu);
+
 void INX(CPU *cpu);
 
 void INY(CPU *cpu);
@@ -38,6 +44,12 @@ void PLA(CPU *cpu);
 void PHP(CPU *cpu);
 
 void PLP(CPU *cpu);
+
+void SEC(CPU *cpu);
+
+void SED(CPU *cpu);
+
+void SEI(CPU *cpu);
 
 void STA(CPU *cpu, uint8_t addressing_mode);
 

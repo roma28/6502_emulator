@@ -50,7 +50,7 @@ struct registers {
 
 struct CPU {
     struct registers reg;
-    u_int8_t *RAM;
+    u_int8_t *MEM;
 };
 
 #endif //INC_6502EMULATOR_6502_BASIC_STRUCTURES_H

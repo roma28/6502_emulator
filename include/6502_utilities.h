@@ -11,6 +11,6 @@
 #define INC_6502EMULATOR_6502_UTILITIES_H
 void reset(CPU *cpu);
 
-void load_ram(CPU *cpu, FILE *f, size_t shift, size_t nbytes);
+void load_mem(CPU *cpu, FILE *f, size_t shift, size_t nbytes);
 
 #endif //INC_6502EMULATOR_6502_UTILITIES_H

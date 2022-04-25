@@ -20,13 +20,13 @@ void nop(CPU *cpu) {
 
 int main() {
     CPU cpu;
-    cpu.RAM = malloc(RAM_SIZE * sizeof(uint8_t));
-    if (cpu.RAM == NULL) return 1;
+    cpu.MEM = malloc(RAM_SIZE * sizeof(uint8_t));
+    if (cpu.MEM == NULL) return 1;
 
-    FILE *romfile = fopen("../asm/a.out", "r");
-    if (romfile) {
-        load_ram(&cpu, romfile, 0x8000, 0x8000);
-        fclose(romfile);
+    FILE *memfile = fopen("../asm/a.out", "r");
+    if (memfile) {
+        load_mem(&cpu, memfile, 0x8000, 0x8000);
+        fclose(memfile);
     }
 
     reset(&cpu);
@@ -37,14 +37,14 @@ int main() {
 ////        print_registers(&cpu);
 //    }
 
-    uint8_t opcode;
-    int i = 0;
-    do {
-        opcode = fetch(&cpu);
+    uint8_t opcode = fetch(&cpu);
+    int i = 1;
+    while (opcode != 0) {
         decode(&cpu, opcode);
         print_registers(&cpu);
+        opcode = fetch(&cpu);
         i++;
-    } while (opcode != 0);
+    };
 
     FILE *ramfile = fopen("../asm/ram.bin", "w");
     if (ramfile) {

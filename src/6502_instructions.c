@@ -44,7 +44,7 @@ void BCS(CPU *cpu) {
     if (cpu->reg.P & CARRY) cpu->reg.PC = branch_address;
 }
 
-void BNZ(CPU *cpu) {
+void BNE(CPU *cpu) {
     //Branch on Non-Zero
     uint16_t branch_address = get_address(cpu, RELATIVE);
     if (!(cpu->reg.P & ZERO)) cpu->reg.PC = branch_address;
@@ -101,7 +101,7 @@ void CLV(CPU *cpu) {
 }
 
 void DEC(CPU *cpu, uint8_t addressing_mode) {
-    *(cpu->RAM + get_address(cpu, addressing_mode)) -= 1;
+    cpu->MEM[get_address(cpu, addressing_mode)] -= 1;
 }
 
 void DEX(CPU *cpu) {
@@ -119,7 +119,7 @@ void EOR(CPU *cpu, uint8_t addressing_mode) {
 }
 
 void INC(CPU *cpu, uint8_t addressing_mode) {
-    *(cpu->RAM + get_address(cpu, addressing_mode)) += 1;
+    cpu->MEM[get_address(cpu, addressing_mode)] += 1;
 }
 
 void INX(CPU *cpu) {
@@ -138,8 +138,8 @@ void JSR(CPU *cpu) {
     //Jump to SubRoutine
     uint16_t jump_address = get_address(cpu, ABSOLUTE);
     uint16_t return_address = cpu->reg.PC - 1;
-    *(cpu->RAM + cpu->reg.SP--) = (uint8_t) (return_address >> 8); // pushing upper byte
-    *(cpu->RAM + cpu->reg.SP--) = (uint8_t) (return_address & 0xff); // pushing lowe byte
+    cpu->MEM[cpu->reg.SP--] = (uint8_t) (return_address >> 8); // pushing upper byte
+    cpu->MEM[cpu->reg.SP--] = (uint8_t) (return_address & 0xff); // pushing lowe byte
     cpu->reg.PC = jump_address;
 }
 
@@ -164,32 +164,34 @@ void LDY(CPU *cpu, uint8_t addressing_mode) {
 
 void ORA(CPU *cpu, uint8_t addressing_mode) {
     //OR Accumulator
-    cpu->reg.A &= get_operand(cpu, addressing_mode);
+    cpu->reg.A |= get_operand(cpu, addressing_mode);
 }
 
 void PHA(CPU *cpu) {
     //PusH Accumulator
-    *(cpu->RAM + cpu->reg.SP--) = cpu->reg.A;
+    cpu->MEM[cpu->reg.SP--] = cpu->reg.A;
 }
 
 void PLA(CPU *cpu) {
     //PuLl Accumulator
-    cpu->reg.A = *(cpu->RAM + cpu->reg.SP++);
+    cpu->reg.A = cpu->MEM[cpu->reg.SP++];
 }
 
 void PHP(CPU *cpu) {
     //PusH Processor status
-    *(cpu->RAM + cpu->reg.SP--) = cpu->reg.P;
+    cpu->MEM[cpu->reg.SP--] = cpu->reg.P;
 }
 
 void PLP(CPU *cpu) {
     //PuLl Processor status
-    cpu->reg.P = *(cpu->RAM + cpu->reg.SP++);
+    cpu->reg.P = cpu->MEM[cpu->reg.SP++];
 }
 
 void RTS(CPU *cpu) {
     //ReTurn from Subroutine
-    uint16_t return_address = *(cpu->RAM + cpu->reg.SP++) | (*(cpu->RAM + cpu->reg.SP++) << 8);
+    uint8_t lower = cpu->MEM[cpu->reg.SP++];
+    uint8_t upper = cpu->MEM[cpu->reg.SP++];
+    uint16_t return_address = lower | (upper << 8);
     cpu->reg.PC = return_address + 1;
 }
 
@@ -210,17 +212,17 @@ void SEI(CPU *cpu) {
 
 void STA(CPU *cpu, uint8_t addressing_mode) {
     //Store A
-    *(cpu->RAM + get_address(cpu, addressing_mode)) = cpu->reg.A;
+    cpu->MEM[get_address(cpu, addressing_mode)] = cpu->reg.A;
 }
 
 void STX(CPU *cpu, uint8_t addressing_mode) {
     //Store X
-    *(cpu->RAM + get_address(cpu, addressing_mode)) = cpu->reg.X;
+    cpu->MEM[get_address(cpu, addressing_mode)] = cpu->reg.X;
 }
 
 void STY(CPU *cpu, uint8_t addressing_mode) {
     //Store Y
-    *(cpu->RAM + get_address(cpu, addressing_mode)) = cpu->reg.Y;
+    cpu->MEM[get_address(cpu, addressing_mode)] = cpu->reg.Y;
 }
 
 void TAX(CPU *cpu) {

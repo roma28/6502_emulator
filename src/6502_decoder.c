@@ -9,30 +9,30 @@
 #include "../include/6502_decoder.h"
 
 /**
- * Fetches the next instuction from RAM
+ * Fetches the next instruction from MEM
  * @param cpu pointer to a CPU instance
  * @return instruction opcode
  */
 uint8_t fetch(CPU *cpu) {
     cpu->reg.PC++;
-    return *(cpu->RAM + cpu->reg.PC - 1);
+    return *(cpu->MEM + cpu->reg.PC - 1);
 }
 
 /**
- * Loads the operand from the RAM
+ * Loads the operand from the MEM
  * @param cpu pointer to a CPU instance
  * @param addressing_mode addressing mode, specifies how the address of the operand is stored
  * @return Operand value
  */
 uint8_t get_operand(CPU *cpu, uint8_t addressing_mode) {
-    return *(cpu->RAM + get_address(cpu, addressing_mode));
+    return *(cpu->MEM + get_address(cpu, addressing_mode));
 }
 
 /**
- * Gives the address in the RAM of the instruction operand
+ * Gives the address in the MEM of the instruction operand
  * @param cpu pointer to a CPU instance
  * @param addressing_mode addressing mode, specifies how the address of the operand is stored
- * @return Operand address in RAM
+ * @return Operand address in MEM
  */
 uint16_t get_address(CPU *cpu, uint8_t addressing_mode) {
 
@@ -41,16 +41,16 @@ uint16_t get_address(CPU *cpu, uint8_t addressing_mode) {
 
     switch (addressing_mode) {
         case ABSOLUTE: // address is stored in two following bytes in LE
-            addr = *(cpu->RAM + cpu->reg.PC) | (*(cpu->RAM + cpu->reg.PC + 1) << 8);
+            addr = cpu->MEM[cpu->reg.PC] | (cpu->MEM[cpu->reg.PC + 1] << 8);
             cpu->reg.PC += 2;
             break;
         case ABSOLUTE_INDEXED_X: // address is stored in two following bytes in LE + shift in X
-            addr = *(cpu->RAM + cpu->reg.PC) | (*(cpu->RAM + cpu->reg.PC + 1) << 8);
+            addr = cpu->MEM[cpu->reg.PC] | (cpu->MEM[cpu->reg.PC + 1] << 8);
             addr += cpu->reg.X;
             cpu->reg.PC += 2;
             break;
         case ABSOLUTE_INDEXED_Y: // address is stored in two following bytes in LE + shift in Y
-            addr = *(cpu->RAM + cpu->reg.PC) | (*(cpu->RAM + cpu->reg.PC + 1) << 8);
+            addr = cpu->MEM[cpu->reg.PC] | (cpu->MEM[cpu->reg.PC + 1] << 8);
             addr += cpu->reg.Y;
             cpu->reg.PC += 2;
             break;
@@ -63,14 +63,14 @@ uint16_t get_address(CPU *cpu, uint8_t addressing_mode) {
             cpu->reg.PC++;
             break;
         case RELATIVE:
-            addr = cpu->reg.PC + (int8_t) (*(cpu->RAM + cpu->reg.PC));
+            addr = cpu->reg.PC + (int8_t) cpu->MEM[cpu->reg.PC];
             cpu->reg.PC++;
             break;
         case ABSOLUTE_INDIRECT:
-            tmp_addr = *(cpu->RAM + cpu->reg.PC) |
-                       (*(cpu->RAM + cpu->reg.PC + 1) << 8); // forming address of the operand address
+            tmp_addr = cpu->MEM[cpu->reg.PC] |
+                       (cpu->MEM[cpu->reg.PC + 1] << 8); // forming address of the operand address
             cpu->reg.PC += 2;
-            addr = *(cpu->RAM + tmp_addr) | (*(cpu->RAM + tmp_addr + 1) << 8); // reading address from memory in LE
+            addr = cpu->MEM[tmp_addr] | (cpu->MEM[tmp_addr + 1] << 8); // reading address from memory in LE
             break;
         case ZERO_PAGE_INDEXED_X: //the following byte is lower byte of the address, the upper byte is always 0x00 + shift in X
             addr = cpu->reg.PC | (0x00 << 8);
@@ -83,15 +83,15 @@ uint16_t get_address(CPU *cpu, uint8_t addressing_mode) {
             cpu->reg.PC++;
             break;
         case ZERO_PAGE_INDEXED_X_INDIRECT:
-            tmp_addr = (*(cpu->RAM + cpu->reg.PC) | (0x00 << 8)) + cpu->reg.X; // forming address of the address
+            tmp_addr = (cpu->MEM[cpu->reg.PC] | (0x00 << 8)) + cpu->reg.X; // forming address of the address
             cpu->reg.PC++;
-            addr = *(cpu->RAM + tmp_addr) | (*(cpu->RAM + tmp_addr + 1) << 8); // reading address from memory in LE
+            addr = cpu->MEM[tmp_addr] | (cpu->MEM[tmp_addr + 1] << 8); // reading address from memory in LE
             break;
         case ZERO_PAGE_INDIRECT_INDEXED_Y:
-            tmp_addr = (*(cpu->RAM + cpu->reg.PC) | (0x00 << 8)); // forming address of the address
+            tmp_addr = (cpu->MEM[cpu->reg.PC] | (0x00 << 8)); // forming address of the address
             cpu->reg.PC++;
-            addr = (*(cpu->RAM + tmp_addr) | (*(cpu->RAM + tmp_addr + 1) << 8)) +
-                   cpu->reg.Y; // reading address from memory in LE
+            addr = cpu->MEM[tmp_addr] | (cpu->MEM[tmp_addr + 1] << 8) +
+                                        cpu->reg.Y; // reading address from memory in LE
             break;
 
         default:
@@ -102,11 +102,6 @@ uint16_t get_address(CPU *cpu, uint8_t addressing_mode) {
     return addr;
 }
 
-/**
- * Decodes the instruction from its opcode and runs it
- * @param cpu Pointer to a CPU instance
- * @param opcode Opcode of the instruction (specifies instruction and addressing mode)
- */
 void decode(CPU *cpu, uint8_t opcode) {
     switch (opcode) {
         case 0x6d:

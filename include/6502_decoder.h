@@ -13,10 +13,15 @@ uint16_t get_address(CPU *cpu, uint8_t addressing_mode);
 
 uint8_t get_operand(CPU *cpu, uint8_t addressing_mode);
 
+/**
+ * Decodes the instruction from its opcode and runs it
+ * @param cpu Pointer to a CPU instance
+ * @param opcode Opcode of the instruction (specifies instruction and addressing mode)
+ */
 void decode(CPU *cpu, uint8_t opcode);
 
 /**
- * Fetches the next instuction from RAM
+ * Fetches the next instuction from MEM
  * @param cpu pointer to a CPU instance
  * @return instruction opcode
  */

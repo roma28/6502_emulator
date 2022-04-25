@@ -6,15 +6,26 @@
 
 #include "../include/6502_utilities.h"
 
+/**
+ * Resets CPU to its default state
+ * @param cpu pointer to a CPU instance
+ */
 void reset(CPU *cpu) {
     cpu->reg.A = 0;
     cpu->reg.X = 0;
     cpu->reg.Y = 0;
     cpu->reg.SP = 0xfd;
-    cpu->reg.PC = ((u_int8_t) *(cpu->RAM + 0xfffd) << 8) | ((u_int8_t) *(cpu->RAM + 0xffff));
+    cpu->reg.PC = ((u_int8_t) *(cpu->MEM + 0xfffd) << 8) | ((u_int8_t) *(cpu->MEM + 0xffff));
     cpu->reg.P = 0b00110100;
 }
 
-void load_ram(CPU *cpu, FILE *f, size_t shift, size_t nbytes) {
-    fread(cpu->RAM + shift, sizeof(uint8_t), nbytes, f);
+/**
+ * Loads MEM from a file
+ * @param cpu pointer to a CPU instance
+ * @param f file to load from
+ * @param shift shift in MEM to load file
+ * @param nbytes number of bytes to load to MEM
+ */
+void load_mem(CPU *cpu, FILE *f, size_t shift, size_t nbytes) {
+    fread(cpu->MEM + shift, sizeof(uint8_t), nbytes, f);
 }

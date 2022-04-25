@@ -56,6 +56,8 @@ void INY(CPU *cpu);
 
 void JMP(CPU *cpu, uint8_t addressing_mode);
 
+void JSR(CPU *cpu);
+
 void LDA(CPU *cpu, uint8_t addressing_mode);
 
 void LDX(CPU *cpu, uint8_t addressing_mode);
@@ -71,6 +73,8 @@ void PLA(CPU *cpu);
 void PHP(CPU *cpu);
 
 void PLP(CPU *cpu);
+
+void RTS(CPU *cpu);
 
 void SEC(CPU *cpu);
 

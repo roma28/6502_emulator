@@ -134,6 +134,15 @@ void JMP(CPU *cpu, uint8_t addressing_mode) {
     cpu->reg.PC = get_address(cpu, addressing_mode);
 }
 
+void JSR(CPU *cpu) {
+    //Jump to SubRoutine
+    uint16_t jump_address = get_address(cpu, ABSOLUTE);
+    uint16_t return_address = cpu->reg.PC - 1;
+    *(cpu->RAM + cpu->reg.SP--) = (uint8_t) (return_address >> 8); // pushing upper byte
+    *(cpu->RAM + cpu->reg.SP--) = (uint8_t) (return_address & 0xff); // pushing lowe byte
+    cpu->reg.PC = jump_address;
+}
+
 void LDA(CPU *cpu, uint8_t addressing_mode) {
     //LoaD A
     cpu->reg.A = get_operand(cpu, addressing_mode);
@@ -151,7 +160,6 @@ void LDY(CPU *cpu, uint8_t addressing_mode) {
     cpu->reg.Y = get_operand(cpu, addressing_mode);
     if (cpu->reg.Y == 0) cpu->reg.P |= ZERO;
     if (cpu->reg.Y & 0b10000000) cpu->reg.P |= NEGATIVE;
-
 }
 
 void ORA(CPU *cpu, uint8_t addressing_mode) {
@@ -177,6 +185,12 @@ void PHP(CPU *cpu) {
 void PLP(CPU *cpu) {
     //PuLl Processor status
     cpu->reg.P = *(cpu->RAM + cpu->reg.SP++);
+}
+
+void RTS(CPU *cpu) {
+    //ReTurn from Subroutine
+    uint16_t return_address = *(cpu->RAM + cpu->reg.SP++) | (*(cpu->RAM + cpu->reg.SP++) << 8);
+    cpu->reg.PC = return_address + 1;
 }
 
 void SEC(CPU *cpu) {

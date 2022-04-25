@@ -278,6 +278,9 @@ void decode(CPU *cpu, uint8_t opcode) {
         case 0x6c:
             JMP(cpu, ABSOLUTE_INDIRECT);
             break;
+        case 0x20:
+            JSR(cpu);
+            break;
 
             // Loading registers
         case 0xad:
@@ -375,6 +378,10 @@ void decode(CPU *cpu, uint8_t opcode) {
             break;
         case 0x28:
             PLP(cpu);
+            break;
+
+        case 0x60:
+            RTS(cpu);
             break;
 
             // Storing

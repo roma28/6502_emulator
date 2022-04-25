@@ -7,6 +7,10 @@
 #include <stdio.h>
 #include "../include/6502_instructions.h"
 
+void set_flags(CPU *cpu, uint8_t result) {
+    if (result == 0) cpu->reg.P |= ZERO;
+    if (result & 0b10000000) cpu->reg.P |= NEGATIVE;
+}
 
 void ADC(CPU *cpu, uint8_t addressing_mode) {
     //ADd memory to accumulator with Carry
@@ -76,7 +80,6 @@ void BVS(CPU *cpu) {
     if (cpu->reg.P & OVERFLOW) cpu->reg.PC = branch_address;
 }
 
-
 void CLC(CPU *cpu) {
     // CLear Carry
     cpu->reg.P &= ~CARRY;
@@ -97,20 +100,26 @@ void CLV(CPU *cpu) {
     cpu->reg.P &= ~OVERFLOW;
 }
 
-void DEC(CPU *cpu) {
-    cpu->reg.A -= 1;
+void DEC(CPU *cpu, uint8_t addressing_mode) {
+    *(cpu->RAM + get_address(cpu, addressing_mode)) -= 1;
 }
 
 void DEX(CPU *cpu) {
     cpu->reg.X -= 1;
+    set_flags(cpu, cpu->reg.X);
 }
 
 void DEY(CPU *cpu) {
     cpu->reg.Y -= 1;
+    set_flags(cpu, cpu->reg.Y);
 }
 
 void EOR(CPU *cpu, uint8_t addressing_mode) {
     cpu->reg.A ^= get_operand(cpu, addressing_mode);
+}
+
+void INC(CPU *cpu, uint8_t addressing_mode) {
+    *(cpu->RAM + get_address(cpu, addressing_mode)) += 1;
 }
 
 void INX(CPU *cpu) {
@@ -135,9 +144,6 @@ void LDA(CPU *cpu, uint8_t addressing_mode) {
 void LDX(CPU *cpu, uint8_t addressing_mode) {
     //LoaD X
     cpu->reg.X = get_operand(cpu, addressing_mode);
-    if (cpu->reg.X == 0) cpu->reg.P |= ZERO;
-    if (cpu->reg.X & 0b10000000) cpu->reg.P |= NEGATIVE;
-
 }
 
 void LDY(CPU *cpu, uint8_t addressing_mode) {

@@ -40,9 +40,15 @@ void CLI(CPU *cpu);
 
 void CLV(CPU *cpu);
 
+void DEC(CPU *cpu, uint8_t addressing_mode);
+
 void DEX(CPU *cpu);
 
 void DEY(CPU *cpu);
+
+void EOR(CPU *cpu, uint8_t addressing_mode);
+
+void INC(CPU *cpu, uint8_t addressing_mode);
 
 void INX(CPU *cpu);
 

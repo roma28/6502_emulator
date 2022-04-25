@@ -134,6 +134,31 @@ void decode(CPU *cpu, uint8_t opcode) {
             ADC(cpu, ZERO_PAGE_INDIRECT_INDEXED_Y);
             break;
 
+        case 0x2d:
+            AND(cpu, ABSOLUTE);
+            break;
+        case 0x3d:
+            AND(cpu, ABSOLUTE_INDEXED_X);
+            break;
+        case 0x39:
+            AND(cpu, ABSOLUTE_INDEXED_Y);
+            break;
+        case 0x29:
+            AND(cpu, IMMEDIATE);
+            break;
+        case 0x25:
+            AND(cpu, ZERO_PAGE);
+            break;
+        case 0x21:
+            AND(cpu, ZERO_PAGE_INDEXED_X_INDIRECT);
+            break;
+        case 0x35:
+            AND(cpu, ZERO_PAGE_INDEXED_X);
+            break;
+        case 0x31:
+            AND(cpu, ZERO_PAGE_INDIRECT_INDEXED_Y);
+            break;
+
             // Branching
         case 0x90:
             BCC(cpu);
@@ -183,19 +208,67 @@ void decode(CPU *cpu, uint8_t opcode) {
             CLV(cpu);
             break;
 
+            // Increments/decrements
+        case 0xce:
+            DEC(cpu, ABSOLUTE);
+            break;
+        case 0xde:
+            DEC(cpu, ABSOLUTE_INDEXED_X);
+            break;
+        case 0xc6:
+            DEC(cpu, ZERO_PAGE);
+            break;
+        case 0xd6:
+            DEC(cpu, ZERO_PAGE_INDEXED_X);
+            break;
         case 0xca:
             DEX(cpu);
             break;
         case 0x88:
-            DEX(cpu);
+            DEY(cpu);
             break;
-
-
+        case 0xee:
+            INC(cpu, ABSOLUTE);
+            break;
+        case 0xfe:
+            INC(cpu, ABSOLUTE_INDEXED_X);
+            break;
+        case 0xe6:
+            INC(cpu, ZERO_PAGE);
+            break;
+        case 0xf6:
+            INC(cpu, ZERO_PAGE_INDEXED_X);
+            break;
         case 0xe8:
             INX(cpu);
             break;
         case 0xc8:
             INY(cpu);
+            break;
+
+        case 0x4d:
+            EOR(cpu, ABSOLUTE);
+            break;
+        case 0x5d:
+            EOR(cpu, ABSOLUTE_INDEXED_X);
+            break;
+        case 0x59:
+            EOR(cpu, ABSOLUTE_INDEXED_Y);
+            break;
+        case 0x49:
+            EOR(cpu, IMMEDIATE);
+            break;
+        case 0x45:
+            EOR(cpu, ZERO_PAGE);
+            break;
+        case 0x41:
+            EOR(cpu, ZERO_PAGE_INDEXED_X_INDIRECT);
+            break;
+        case 0x55:
+            EOR(cpu, ZERO_PAGE_INDEXED_X);
+            break;
+        case 0x51:
+            EOR(cpu, ZERO_PAGE_INDIRECT_INDEXED_Y);
             break;
 
             // Jumping
@@ -231,7 +304,6 @@ void decode(CPU *cpu, uint8_t opcode) {
         case 0xb1:
             LDA(cpu, ZERO_PAGE_INDIRECT_INDEXED_Y);
             break;
-
         case 0xae:
             LDX(cpu, ABSOLUTE);
             break;
@@ -247,7 +319,6 @@ void decode(CPU *cpu, uint8_t opcode) {
         case 0xb6:
             LDX(cpu, ZERO_PAGE_INDEXED_Y);
             break;
-
         case 0xac:
             LDY(cpu, ABSOLUTE);
             break;
@@ -267,20 +338,38 @@ void decode(CPU *cpu, uint8_t opcode) {
         case 0xea: //nop
             break;
 
+        case 0x0d:
+            ORA(cpu, ABSOLUTE);
+            break;
+        case 0x1d:
+            ORA(cpu, ABSOLUTE_INDEXED_X);
+            break;
+        case 0x19:
+            ORA(cpu, ABSOLUTE_INDEXED_Y);
+            break;
         case 0x09:
             ORA(cpu, IMMEDIATE);
             break;
-        case 0x0d:
-            ORA(cpu, ABSOLUTE_INDIRECT);
+        case 0x05:
+            ORA(cpu, ZERO_PAGE);
+            break;
+        case 0x01:
+            ORA(cpu, ZERO_PAGE_INDEXED_X_INDIRECT);
+            break;
+        case 0x15:
+            ORA(cpu, ZERO_PAGE_INDEXED_X);
+            break;
+        case 0x11:
+            ORA(cpu, ZERO_PAGE_INDIRECT_INDEXED_Y);
             break;
 
+            // Stack
         case 0x48:
             PHA(cpu);
             break;
         case 0x68:
             PLA(cpu);
             break;
-
         case 0x08:
             PHP(cpu);
             break;
@@ -288,6 +377,7 @@ void decode(CPU *cpu, uint8_t opcode) {
             PLP(cpu);
             break;
 
+            // Storing
         case 0x8d:
             STA(cpu, ABSOLUTE);
             break;
@@ -309,7 +399,6 @@ void decode(CPU *cpu, uint8_t opcode) {
         case 0x91:
             STA(cpu, ZERO_PAGE_INDIRECT_INDEXED_Y);
             break;
-
         case 0x8e:
             STX(cpu, ABSOLUTE);
             break;
@@ -319,7 +408,6 @@ void decode(CPU *cpu, uint8_t opcode) {
         case 0x96:
             STX(cpu, ZERO_PAGE_INDEXED_Y);
             break;
-
         case 0x8c:
             STY(cpu, ABSOLUTE);
             break;
@@ -330,20 +418,19 @@ void decode(CPU *cpu, uint8_t opcode) {
             STY(cpu, ZERO_PAGE_INDEXED_X);
             break;
 
+            // Transferring
         case 0xaa:
             TAX(cpu);
             break;
         case 0x8a:
             TXA(cpu);
             break;
-
         case 0xa8:
             TAY(cpu);
             break;
         case 0x98:
             TYA(cpu);
             break;
-
         case 0xba:
             TSX(cpu);
             break;

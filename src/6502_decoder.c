@@ -25,7 +25,7 @@ uint8_t fetch(CPU *cpu) {
  * @return Operand value
  */
 uint8_t get_operand(CPU *cpu, uint8_t addressing_mode) {
-    return *(cpu->MEM + get_address(cpu, addressing_mode));
+    return cpu->MEM[get_address(cpu, addressing_mode)];
 }
 
 /**
@@ -63,7 +63,7 @@ uint16_t get_address(CPU *cpu, uint8_t addressing_mode) {
             cpu->reg.PC++;
             break;
         case RELATIVE:
-            addr = cpu->reg.PC + (int8_t) cpu->MEM[cpu->reg.PC];
+            addr = cpu->reg.PC + (int8_t) cpu->MEM[cpu->reg.PC] + 1;
             cpu->reg.PC++;
             break;
         case ABSOLUTE_INDIRECT:

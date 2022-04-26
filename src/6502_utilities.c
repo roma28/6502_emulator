@@ -15,7 +15,7 @@ void reset(CPU *cpu) {
     cpu->reg.X = 0;
     cpu->reg.Y = 0;
     cpu->reg.SP = 0xfd;
-    cpu->reg.PC = ((u_int8_t) *(cpu->MEM + 0xfffd) << 8) | ((u_int8_t) *(cpu->MEM + 0xffff));
+    cpu->reg.PC = cpu->MEM[0xfffd] << 8 | cpu->MEM[0xfffc];
     cpu->reg.P = 0b00110100;
 }
 

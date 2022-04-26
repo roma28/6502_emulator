@@ -6,6 +6,7 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <curses.h>
 
 #include "../include/6502_basic_structures.h"
 #include "../include/6502_debug.h"
@@ -20,7 +21,7 @@ void nop(CPU *cpu) {
 
 int main() {
     CPU cpu;
-    cpu.MEM = malloc(RAM_SIZE * sizeof(uint8_t));
+    cpu.MEM = (uint8_t *) malloc(RAM_SIZE * sizeof(uint8_t));
     if (cpu.MEM == NULL) return 1;
 
     FILE *memfile = fopen("../asm/a.out", "r");
@@ -37,11 +38,12 @@ int main() {
 ////        print_registers(&cpu);
 //    }
 
+    print_registers(&cpu);
     uint8_t opcode = fetch(&cpu);
-    int i = 1;
+    int i = 0;
     while (opcode != 0) {
-        decode(&cpu, opcode);
         print_registers(&cpu);
+        decode(&cpu, opcode);
         opcode = fetch(&cpu);
         i++;
     };

@@ -7,24 +7,29 @@
 #include <stdio.h>
 #include "../include/6502_instructions.h"
 
-void set_flags(CPU *cpu, uint8_t result) {
-    if (result == 0) cpu->reg.P |= ZERO;
-    if (result & 0b10000000) cpu->reg.P |= NEGATIVE;
+void set_zero_negative_flags(CPU *cpu, uint8_t n) {
+    if (n == 0) cpu->reg.P |= ZERO;
+    if (n & 0b10000000) cpu->reg.P |= NEGATIVE;
 }
 
 void ADC(CPU *cpu, uint8_t addressing_mode) {
     //ADd memory to accumulator with Carry
     uint8_t operand = get_operand(cpu, addressing_mode);
 
-    uint8_t res = cpu->reg.A + operand;
-    res += cpu->reg.P & 1; // checking for carry flag
+    uint16_t res = cpu->reg.A + operand;
+    uint8_t res_lower = res & 0xff;
+    res += cpu->reg.P & CARRY; // checking for carry flag
 
-    cpu->reg.A = res;
+    if (res > 0xff) cpu->reg.P |= OVERFLOW;
+
+    cpu->reg.A = res_lower;
+    set_zero_negative_flags(cpu, cpu->reg.A);
 }
 
 void AND(CPU *cpu, uint8_t addressing_mode) {
     //Accumulator aND
     cpu->reg.A &= get_operand(cpu, addressing_mode);
+    set_zero_negative_flags(cpu, cpu->reg.A);
 }
 
 void ASL(CPU *cpu) {
@@ -105,29 +110,56 @@ void DEC(CPU *cpu, uint8_t addressing_mode) {
 }
 
 void DEX(CPU *cpu) {
-    cpu->reg.X -= 1;
-    set_flags(cpu, cpu->reg.X);
+    if (cpu->reg.X == 0) {
+        cpu->reg.P |= OVERFLOW;
+        cpu->reg.X = 0xff;
+    } else cpu->reg.X -= 1;
+
+    set_zero_negative_flags(cpu, cpu->reg.X);
+
 }
 
 void DEY(CPU *cpu) {
-    cpu->reg.Y -= 1;
-    set_flags(cpu, cpu->reg.Y);
+    if (cpu->reg.Y == 0) {
+        cpu->reg.P |= OVERFLOW;
+        cpu->reg.Y = 0xff;
+    } else cpu->reg.Y -= 1;
+
+    set_zero_negative_flags(cpu, cpu->reg.Y);
 }
 
 void EOR(CPU *cpu, uint8_t addressing_mode) {
     cpu->reg.A ^= get_operand(cpu, addressing_mode);
+    set_zero_negative_flags(cpu, cpu->reg.A);
 }
 
 void INC(CPU *cpu, uint8_t addressing_mode) {
-    cpu->MEM[get_address(cpu, addressing_mode)] += 1;
+    uint16_t addr = get_address(cpu, addressing_mode);
+    if (cpu->MEM[addr] == 0xff) {
+        cpu->reg.P |= OVERFLOW;
+        cpu->MEM[addr] = 0;
+    } else cpu->MEM[addr] += 1;
+
+    set_zero_negative_flags(cpu, cpu->MEM[addr]);
+
 }
 
 void INX(CPU *cpu) {
-    cpu->reg.X += 1;
+    if (cpu->reg.X == 0xff) {
+        cpu->reg.P |= OVERFLOW;
+        cpu->reg.X = 0;
+    } else cpu->reg.X += 1;
+
+    set_zero_negative_flags(cpu, cpu->reg.X);
 }
 
 void INY(CPU *cpu) {
-    cpu->reg.Y += 1;
+    if (cpu->reg.Y == 0xff) {
+        cpu->reg.P |= OVERFLOW;
+        cpu->reg.Y = 0;
+    } else cpu->reg.Y += 1;
+
+    set_zero_negative_flags(cpu, cpu->reg.Y);
 }
 
 void JMP(CPU *cpu, uint8_t addressing_mode) {
@@ -146,25 +178,25 @@ void JSR(CPU *cpu) {
 void LDA(CPU *cpu, uint8_t addressing_mode) {
     //LoaD A
     cpu->reg.A = get_operand(cpu, addressing_mode);
-    if (cpu->reg.A == 0) cpu->reg.P |= ZERO;
-    if (cpu->reg.A & 0b10000000) cpu->reg.P |= NEGATIVE;
+    set_zero_negative_flags(cpu, cpu->reg.A);
 }
 
 void LDX(CPU *cpu, uint8_t addressing_mode) {
     //LoaD X
     cpu->reg.X = get_operand(cpu, addressing_mode);
+    set_zero_negative_flags(cpu, cpu->reg.X);
 }
 
 void LDY(CPU *cpu, uint8_t addressing_mode) {
     //LoaD Y
     cpu->reg.Y = get_operand(cpu, addressing_mode);
-    if (cpu->reg.Y == 0) cpu->reg.P |= ZERO;
-    if (cpu->reg.Y & 0b10000000) cpu->reg.P |= NEGATIVE;
+    set_zero_negative_flags(cpu, cpu->reg.Y);
 }
 
 void ORA(CPU *cpu, uint8_t addressing_mode) {
     //OR Accumulator
     cpu->reg.A |= get_operand(cpu, addressing_mode);
+    set_zero_negative_flags(cpu, cpu->reg.A);
 }
 
 void PHA(CPU *cpu) {
@@ -189,8 +221,8 @@ void PLP(CPU *cpu) {
 
 void RTS(CPU *cpu) {
     //ReTurn from Subroutine
-    uint8_t lower = cpu->MEM[cpu->reg.SP++];
-    uint8_t upper = cpu->MEM[cpu->reg.SP++];
+    uint8_t lower = cpu->MEM[cpu->reg.SP++]; // popping lower byte
+    uint8_t upper = cpu->MEM[cpu->reg.SP++]; // popping upper byte
     uint16_t return_address = lower | (upper << 8);
     cpu->reg.PC = return_address + 1;
 }
@@ -228,31 +260,37 @@ void STY(CPU *cpu, uint8_t addressing_mode) {
 void TAX(CPU *cpu) {
     //Transfer Accumulator to X
     cpu->reg.X = cpu->reg.A;
+    set_zero_negative_flags(cpu, cpu->reg.A);
 }
 
 void TXA(CPU *cpu) {
     //Transfer X to Accumulator
     cpu->reg.A = cpu->reg.X;
+    set_zero_negative_flags(cpu, cpu->reg.X);
 }
 
 void TAY(CPU *cpu) {
     //Transfer Accumulator to Y
     cpu->reg.Y = cpu->reg.A;
+    set_zero_negative_flags(cpu, cpu->reg.A);
 }
 
 void TYA(CPU *cpu) {
     //Transfer Y to Accumulator
     cpu->reg.A = cpu->reg.Y;
+    set_zero_negative_flags(cpu, cpu->reg.Y);
 }
 
 void TSX(CPU *cpu) {
     //Transfer Stack pointer to X
     cpu->reg.X = cpu->reg.SP;
+    set_zero_negative_flags(cpu, cpu->reg.SP);
 }
 
 void TXS(CPU *cpu) {
     //Transfer X to Stack pointer
     cpu->reg.SP = cpu->reg.X;
+    set_zero_negative_flags(cpu, cpu->reg.X);
 }
 
 

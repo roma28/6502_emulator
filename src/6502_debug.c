@@ -11,10 +11,11 @@
  * @param cpu pointer to a CPU instance
  */
 void print_registers(CPU *cpu) {
-    printf("A: %02X\nX: %02X\nY: %02X\nSP: %04X\nPC: %04X\n", cpu->reg.A, cpu->reg.X, cpu->reg.Y, cpu->reg.SP,
-           cpu->reg.PC);
+    printf("A: %02X\nX: %02X\nY: %02X\nSP: %04X\nPC: %04X\n", cpu->registers.A, cpu->registers.X, cpu->registers.Y,
+           cpu->registers.SP,
+           cpu->registers.PC);
     printf("Flags: ");
-    for (int i = sizeof(uint8_t) * 8; i != -1; i--) printf("%d", (cpu->reg.P & (1 << i)) >> i);
+    for (int i = sizeof(uint8_t) * 8; i != -1; i--) printf("%d", (cpu->registers.P & (1 << i)) >> i);
     printf("\n\n");
 }
 

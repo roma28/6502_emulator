@@ -11,6 +11,8 @@
 #define RAM_SIZE 65536
 
 typedef struct CPU CPU;
+typedef struct registers Registers;
+
 
 enum {
     CARRY = (1 << 0),
@@ -49,7 +51,7 @@ struct registers {
 };
 
 struct CPU {
-    struct registers reg;
+    Registers registers;
     u_int8_t *MEM;
 };
 

@@ -11,12 +11,12 @@
  * @param cpu pointer to a CPU instance
  */
 void reset(CPU *cpu) {
-    cpu->reg.A = 0;
-    cpu->reg.X = 0;
-    cpu->reg.Y = 0;
-    cpu->reg.SP = 0xfd;
-    cpu->reg.PC = cpu->MEM[0xfffd] << 8 | cpu->MEM[0xfffc];
-    cpu->reg.P = 0b00110100;
+    cpu->registers.A = 0;
+    cpu->registers.X = 0;
+    cpu->registers.Y = 0;
+    cpu->registers.SP = 0xfd;
+    cpu->registers.PC = cpu->MEM[0xfffd] << 8 | cpu->MEM[0xfffc];
+    cpu->registers.P = 0b00110100;
 }
 
 /**

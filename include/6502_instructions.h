@@ -102,6 +102,13 @@ void CLI(CPU *cpu);
  */
 void CLV(CPU *cpu);
 
+void CMP(CPU *cpu, uint8_t addressing_mode);
+
+void CPX(CPU *cpu, uint8_t addressing_mode);
+
+void CPY(CPU *cpu, uint8_t addressing_mode);
+
+
 /**
  * DECrement memory
  * @param cpu pointer to a CPU instance

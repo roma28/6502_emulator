@@ -14,8 +14,8 @@
  * @return instruction opcode
  */
 uint8_t fetch(CPU *cpu) {
-    cpu->reg.PC++;
-    return *(cpu->MEM + cpu->reg.PC - 1);
+    cpu->registers.PC++;
+    return *(cpu->MEM + cpu->registers.PC - 1);
 }
 
 /**
@@ -41,57 +41,57 @@ uint16_t get_address(CPU *cpu, uint8_t addressing_mode) {
 
     switch (addressing_mode) {
         case ABSOLUTE: // address is stored in two following bytes in LE
-            addr = cpu->MEM[cpu->reg.PC] | (cpu->MEM[cpu->reg.PC + 1] << 8);
-            cpu->reg.PC += 2;
+            addr = cpu->MEM[cpu->registers.PC] | (cpu->MEM[cpu->registers.PC + 1] << 8);
+            cpu->registers.PC += 2;
             break;
         case ABSOLUTE_INDEXED_X: // address is stored in two following bytes in LE + shift in X
-            addr = cpu->MEM[cpu->reg.PC] | (cpu->MEM[cpu->reg.PC + 1] << 8);
-            addr += cpu->reg.X;
-            cpu->reg.PC += 2;
+            addr = cpu->MEM[cpu->registers.PC] | (cpu->MEM[cpu->registers.PC + 1] << 8);
+            addr += cpu->registers.X;
+            cpu->registers.PC += 2;
             break;
         case ABSOLUTE_INDEXED_Y: // address is stored in two following bytes in LE + shift in Y
-            addr = cpu->MEM[cpu->reg.PC] | (cpu->MEM[cpu->reg.PC + 1] << 8);
-            addr += cpu->reg.Y;
-            cpu->reg.PC += 2;
+            addr = cpu->MEM[cpu->registers.PC] | (cpu->MEM[cpu->registers.PC + 1] << 8);
+            addr += cpu->registers.Y;
+            cpu->registers.PC += 2;
             break;
         case IMMEDIATE: // operand is the next byte
-            addr = cpu->reg.PC;
-            cpu->reg.PC++;
+            addr = cpu->registers.PC;
+            cpu->registers.PC++;
             break;
         case ZERO_PAGE: //the following byte is lower byte of the address, the upper byte is always 0x00
-            addr = cpu->reg.PC | (0x00 << 8);
-            cpu->reg.PC++;
+            addr = cpu->registers.PC | (0x00 << 8);
+            cpu->registers.PC++;
             break;
         case RELATIVE:
-            addr = cpu->reg.PC + (int8_t) cpu->MEM[cpu->reg.PC] + 1;
-            cpu->reg.PC++;
+            addr = cpu->registers.PC + (int8_t) cpu->MEM[cpu->registers.PC] + 1;
+            cpu->registers.PC++;
             break;
         case ABSOLUTE_INDIRECT:
-            tmp_addr = cpu->MEM[cpu->reg.PC] |
-                       (cpu->MEM[cpu->reg.PC + 1] << 8); // forming address of the operand address
-            cpu->reg.PC += 2;
+            tmp_addr = cpu->MEM[cpu->registers.PC] |
+                       (cpu->MEM[cpu->registers.PC + 1] << 8); // forming address of the operand address
+            cpu->registers.PC += 2;
             addr = cpu->MEM[tmp_addr] | (cpu->MEM[tmp_addr + 1] << 8); // reading address from memory in LE
             break;
         case ZERO_PAGE_INDEXED_X: //the following byte is lower byte of the address, the upper byte is always 0x00 + shift in X
-            addr = cpu->reg.PC | (0x00 << 8);
-            addr += cpu->reg.X;
-            cpu->reg.PC++;
+            addr = cpu->registers.PC | (0x00 << 8);
+            addr += cpu->registers.X;
+            cpu->registers.PC++;
             break;
         case ZERO_PAGE_INDEXED_Y: //the following byte is lower byte of the address, the upper byte is always 0x00 + shift in Y
-            addr = cpu->reg.PC | (0x00 << 8);
-            addr += cpu->reg.Y;
-            cpu->reg.PC++;
+            addr = cpu->registers.PC | (0x00 << 8);
+            addr += cpu->registers.Y;
+            cpu->registers.PC++;
             break;
         case ZERO_PAGE_INDEXED_X_INDIRECT:
-            tmp_addr = (cpu->MEM[cpu->reg.PC] | (0x00 << 8)) + cpu->reg.X; // forming address of the address
-            cpu->reg.PC++;
+            tmp_addr = (cpu->MEM[cpu->registers.PC] | (0x00 << 8)) + cpu->registers.X; // forming address of the address
+            cpu->registers.PC++;
             addr = cpu->MEM[tmp_addr] | (cpu->MEM[tmp_addr + 1] << 8); // reading address from memory in LE
             break;
         case ZERO_PAGE_INDIRECT_INDEXED_Y:
-            tmp_addr = (cpu->MEM[cpu->reg.PC] | (0x00 << 8)); // forming address of the address
-            cpu->reg.PC++;
+            tmp_addr = (cpu->MEM[cpu->registers.PC] | (0x00 << 8)); // forming address of the address
+            cpu->registers.PC++;
             addr = cpu->MEM[tmp_addr] | (cpu->MEM[tmp_addr + 1] << 8) +
-                                        cpu->reg.Y; // reading address from memory in LE
+                                        cpu->registers.Y; // reading address from memory in LE
             break;
 
         default:
@@ -201,6 +201,50 @@ void decode(CPU *cpu, uint8_t opcode) {
             break;
         case 0xb8:
             CLV(cpu);
+            break;
+
+            // Comparisons
+        case 0xcd:
+            CMP(cpu, ABSOLUTE);
+            break;
+        case 0xdd:
+            CMP(cpu, ABSOLUTE_INDEXED_X);
+            break;
+        case 0xd9:
+            CMP(cpu, ABSOLUTE_INDEXED_Y);
+            break;
+        case 0xc9:
+            CMP(cpu, IMMEDIATE);
+            break;
+        case 0xc5:
+            CMP(cpu, ZERO_PAGE);
+            break;
+        case 0xc1:
+            CMP(cpu, ZERO_PAGE_INDEXED_X_INDIRECT);
+            break;
+        case 0xd5:
+            CMP(cpu, ZERO_PAGE_INDEXED_X);
+            break;
+        case 0xd1:
+            CMP(cpu, ZERO_PAGE_INDIRECT_INDEXED_Y);
+            break;
+        case 0xec:
+            CPX(cpu, ABSOLUTE);
+            break;
+        case 0xe0:
+            CPX(cpu, IMMEDIATE);
+            break;
+        case 0xe4:
+            CPX(cpu, ZERO_PAGE);
+            break;
+        case 0xcc:
+            CPY(cpu, ABSOLUTE);
+            break;
+        case 0xc0:
+            CPY(cpu, IMMEDIATE);
+            break;
+        case 0xc4:
+            CPY(cpu, ZERO_PAGE);
             break;
 
             // Increments/decrements
@@ -441,7 +485,7 @@ void decode(CPU *cpu, uint8_t opcode) {
             break;
 
         default:
-            printf("Not implemented opcode %02X at %04X\n", opcode, cpu->reg.PC - 1);
+            printf("Not implemented opcode %02X at %04X\n", opcode, cpu->registers.PC - 1);
             break;
     }
 }

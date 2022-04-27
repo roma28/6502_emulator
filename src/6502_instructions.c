@@ -48,9 +48,19 @@ void AND(CPU *cpu, uint8_t addressing_mode) {
 }
 
 void ASL(CPU *cpu) {
-    //Accumulator Shift Left
+    //Arithmetic Shift Left
+    if (cpu->registers.A & 0b10000000) cpu->registers.P |= CARRY;
     cpu->registers.A <<= 1;
+    set_zero_negative_flags(cpu, cpu->registers.A);
 }
+
+void LSR(CPU *cpu) {
+    //Logic Shift Rigth
+    if (cpu->registers.A & 0b00000001) cpu->registers.P |= CARRY;
+    cpu->registers.A >>= 1;
+    set_zero_negative_flags(cpu, cpu->registers.A);
+}
+
 
 void BCC(CPU *cpu) {
     //Branch on Carry Clear
@@ -62,6 +72,14 @@ void BCS(CPU *cpu) {
     //Branch on Carry Set
     uint16_t branch_address = get_address(cpu, RELATIVE);
     if (cpu->registers.P & CARRY) cpu->registers.PC = branch_address;
+}
+
+void BIT(CPU *cpu, uint8_t addressing_mode) {
+    uint8_t operand = get_operand(cpu, addressing_mode);
+    uint8_t res = cpu->registers.A & operand;
+    if (operand >> 6) cpu->registers.P |= OVERFLOW;
+    if (operand >> 7) cpu->registers.P |= NEGATIVE;
+    if (res == 0) cpu->registers.P |= ZERO;
 }
 
 void BNE(CPU *cpu) {

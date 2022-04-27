@@ -42,6 +42,8 @@ void BCC(CPU *cpu);
  */
 void BCS(CPU *cpu);
 
+void BIT(CPU *cpu, uint8_t addressing_mode);
+
 /**
  * Branch on Non-Equal
  * @param cpu pointer to a CPU instance

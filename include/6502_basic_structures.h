@@ -55,4 +55,10 @@ struct CPU {
     u_int8_t *MEM;
 };
 
+typedef struct Instruction {
+    void (*func)(CPU *, int);
+
+    uint8_t addressing_mode
+};
+
 #endif //INC_6502EMULATOR_6502_BASIC_STRUCTURES_H

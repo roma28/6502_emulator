@@ -10,6 +10,8 @@
 
 #define RAM_SIZE 65536
 
+
+
 typedef struct CPU CPU;
 typedef struct registers Registers;
 

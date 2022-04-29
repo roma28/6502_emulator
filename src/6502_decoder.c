@@ -246,6 +246,16 @@ void decode(CPU *cpu, uint8_t opcode) {
         case 0xc4:
             CPY(cpu, ZERO_PAGE);
             break;
+        case 0x2c:
+            BIT(cpu, ABSOLUTE);
+            break;
+        case 0x89:
+            BIT(cpu, IMMEDIATE);
+            break;
+        case 0x24:
+            BIT(cpu, ZERO_PAGE);
+            break;
+
 
             // Increments/decrements
         case 0xce:
@@ -485,7 +495,7 @@ void decode(CPU *cpu, uint8_t opcode) {
             break;
 
         default:
-            printf("Not implemented opcode %02X at %04X\n", opcode, cpu->registers.PC - 1);
+            printf("Illegal opcode %02X at %04X\n", opcode, cpu->registers.PC - 1);
             break;
     }
 }

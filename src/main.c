@@ -6,56 +6,55 @@
 
 #include <stdio.h>
 #include <stdlib.h>
-#include <curses.h>
+#include <ncurses.h>
 
 #include "../include/6502_basic_structures.h"
 #include "../include/6502_debug.h"
 #include "../include/6502_utilities.h"
 #include "../include/6502_instructions.h"
-#include "../include/6502_decoder.h"
-
-
-void nop(CPU *cpu) {
-}
+#include "../include/terminal.h"
 
 
 int main() {
-    CPU cpu;
-    cpu.MEM = (uint8_t *) malloc(RAM_SIZE * sizeof(uint8_t));
-    if (cpu.MEM == NULL) return 1;
+
+    CPU *cpu = malloc(sizeof(CPU));
+    if (!cpu) return 1;
+    cpu->MEM = (uint8_t *) malloc(RAM_SIZE * sizeof(uint8_t));
+    if (!cpu->MEM) return 1;
 
     FILE *memfile = fopen("../asm/a.out", "r");
     if (memfile) {
-        load_mem(&cpu, memfile, 0x8000, 0x8000);
+        load_mem(cpu, memfile, 0x8000, 0x8000);
         fclose(memfile);
     }
 
-    reset(&cpu);
-//    ssize_t instructions_to_run = INT32_MAX;
-//    ssize_t instructions_to_run = 25;
-//    for (ssize_t i = 0; i < instructions_to_run; ++i) {
-//        decode(&cpu, fetch(&cpu));
-////        print_registers(&cpu);
-//    }
+    reset(cpu);
 
-    print_registers(&cpu);
-    uint8_t opcode = fetch(&cpu);
+    initscr();
+    echo();
+
+    uint8_t opcode = fetch(cpu);
     int i = 0;
     while (opcode != 0) {
-        print_registers(&cpu);
-        decode(&cpu, opcode);
-        opcode = fetch(&cpu);
+//        print_registers(&cpu);
+        update_terminal(cpu);
+        decode(cpu, opcode);
+        opcode = fetch(cpu);
         i++;
     };
 
     FILE *ramfile = fopen("../asm/ram.bin", "w");
     if (ramfile) {
-        dump_ram(&cpu, ramfile);
+        dump_ram(cpu, ramfile);
         fclose(ramfile);
     }
     printf("%d instructions executed", i);
 
+//    getch();
+    endwin();
     return 0;
 }
+
+
 
 

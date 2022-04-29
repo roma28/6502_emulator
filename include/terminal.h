@@ -10,4 +10,9 @@
 
 void update_terminal(CPU *cpu);
 
+#define TERMINAL_OUTPUT 0x2000
+#define TERMINAL_INPUT 0x27D0
+#define TERMINAL_CONTROL 0x1FFF
+
+
 #endif //INC_6502EMULATOR_TERMINAL_H

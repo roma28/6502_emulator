@@ -10,8 +10,6 @@
 
 #define RAM_SIZE 65536
 
-#define TERMINAL_OUTPUT 0x2000
-#define TERMINAL_INPUT 0x27D0
 
 
 typedef struct CPU CPU;

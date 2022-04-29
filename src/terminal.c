@@ -5,6 +5,7 @@
 #include "../include/terminal.h"
 #include <string.h>
 
+
 void update_terminal(CPU *cpu) {
     clear();
     for (size_t i = 0; i < 24; ++i) {
@@ -18,5 +19,5 @@ void update_terminal(CPU *cpu) {
         }
     }
     refresh();
-    getstr((char *) &cpu->MEM[TERMINAL_INPUT]);
+    if (cpu->MEM[TERMINAL_CONTROL] & 0b00000001) getstr((char *) &cpu->MEM[TERMINAL_INPUT]);
 }
